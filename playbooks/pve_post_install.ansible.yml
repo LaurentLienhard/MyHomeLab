@@ -1,0 +1,78 @@
+---
+
+# Description
+- name: Pve post installation configuration
+  hosts: pve
+  gather_facts: true
+  vars_files: 
+    - ../vars/pve.yml  
+  tasks:
+    - name: Correct ProxMox VE Sources
+    # The package manager will use the correct sources to update and install packages on your Proxmox VE server
+      ansible.builtin.blockinfile:
+        path: /etc/apt/sources.list
+        block: |
+          deb http://deb.debian.org/debian bookworm main contrib
+          deb http://deb.debian.org/debian bookworm-updates main contrib
+          deb http://security.debian.org/debian-security bookworm-security main contrib
+        create: yes
+        state: present
+    
+    - name: Remove 'pve-enterprise' repository
+    # This will remove the enterprise repository from the sources list
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+        state: absent
+      
+    - name: Create 'pve-no-subscription' repository
+    # This will create the no subscription repository file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/pve-install-repo.list
+        state: touch
+        mode: '0644'
+        owner: root
+        group: root    
+      
+    - name: Add 'pve-no-subscription' repository
+    # This will add the no subscription repository to the sources list
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/pve-install-repo.list
+        line: 'deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription'
+        state: present
+
+    - name: Create 'pvetest' repository
+    # This will create the pvetest repository file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/pvetest-for-beta.list
+        state: touch
+        mode: '0644'
+        owner: root
+        group: root  
+
+    - name: Add (Disabled) 'pvetest' repository
+    # This will add the pvetest repository to the sources list
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/pvetest-for-beta.list
+        line: '# deb http://download.proxmox.com/debian/pve bookworm pvetest'
+        state: present
+    
+    - name: Disable subscription nag
+    # This will disable the subscription nag
+      ansible.builtin.shell: 'sed -Ezi.bak "s/(function\(orig_cmd\) \{)/\1\n\torig_cmd\(\);\n\treturn;/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && systemctl restart pveproxy.service'
+    
+    - name: Updating Proxmox VE (Patience)
+    # This will update the Proxmox VE server
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+
+    - name: Install pip
+      ansible.builtin.package:
+        name:
+          - python3-pip
+          - python3-proxmoxer
+        state: present

@@ -1,0 +1,10 @@
+ansible_user: "root"
+ansible_password: "bleak-scanning5-marry"
+nas_ip: "192.168.1.252"
+nas_path: "/volume1/Proxmox"
+
+proxmox_api_host: "https://192.168.1.201:8006/api2/json"
+proxmox_api_node: "pve1"
+proxmox_api_user: "ansible@pve!Ansible"
+proxmox_api_token_id: "Ansible"
+proxmox_api_token_secret: "b8536edd-49e4-4a27-9751-7e866af750c6"
