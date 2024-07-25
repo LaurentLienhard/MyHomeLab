@@ -4,6 +4,3 @@ pve:
       ansible_host: 192.168.1.201
     pve2:
       ansible_host: 192.168.1.202
-  vars:
-    ansible_connection: ssh
-    ansible_become_user: root

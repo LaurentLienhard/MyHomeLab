@@ -1,6 +1,9 @@
 ---
 - name: ping module demo
   hosts: all
+  vars_files: 
+    - ../vars/pve.yml 
+    - ../vars/proxmox_auth.yml 
   tasks:
     - name: test connection
       ansible.builtin.ping:
