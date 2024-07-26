@@ -1,5 +1,0 @@
-#
-# requirements for PIP
-#
-ansible-core==2.17.2
-pywinrm>=0.2.2
