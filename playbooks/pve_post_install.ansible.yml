@@ -5,8 +5,8 @@
   hosts: pve
   gather_facts: true
   vars_files: 
-    - ../vars/pve.yml 
-    - ../vars/proxmox_auth.yml 
+    - ../vars/vars.yml 
+    - ../vars/proxmox.yml 
   tasks:
     - name: Correct ProxMox VE Sources
     # The package manager will use the correct sources to update and install packages on your Proxmox VE server
