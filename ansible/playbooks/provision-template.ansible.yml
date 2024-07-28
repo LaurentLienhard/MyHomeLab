@@ -1,0 +1,32 @@
+---
+
+#description
+- name: Create windows template
+  hosts: test
+  gather_facts: false
+  vars_files:
+    - ../vars/vars.yml 
+    - ../vars/proxmox.yml
+    - ../vars/wintpl.yml
+
+  tasks:
+    # Get next available Proxmox VE VMID, semi-random, idempotent, seed from hostname & template_name
+    - name: Get available VMID
+      vars:
+        var_concat_seed: "{{inventory_hostname}}-{{template_name}}"
+        rand_vmid: "{{9999 | random(seed=var_concat_seed)}}"  
+      command: pvesh get /cluster/nextid -vmid {{rand_vmid}}
+      register: next_vmid
+      failed_when: next_vmid.rc != 0
+    
+      # Create temp directory
+    - name: Create temp directory
+      file:
+        path: /tmp/{{template_name}}
+        state: directory
+    
+        # Template out autounattend answer file    
+    - name: Template out autounattend answer file        
+      template:
+        src:  ../files/wintpl/autounattend.xml.tpl
+        dest: /tmp/{{template_name}}/autounattend.xml
