@@ -1,8 +1,8 @@
 ---
 
 # PVE Template Provisioning Variables
-template_name:  2019DC-tpl
-pve_storage_id: vm-store
+template_name:  2022DC-tpl
+pve_storage_id: local-lvm
 vm_cores: 2
 vm_sockets: 2
 vm_memory_mb: 2048
@@ -10,14 +10,15 @@ vm_os_type: win10
 # vm_os_type must be valid value per https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines
 drive_size_gb: 50
 start_at_boot: no
-os_iso_location: local:iso/17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso
-format: qcow2
+os_iso_location: nas-iso:iso/Windows_Server_2022_EN.iso
+format: raw
 # qcow2 or raw if on lvm
-agent: enabled=0
-# Enable with: 'enabled=1,fstrim_cloned_disks=1,type=virtio'
+#agent: enabled=0
+# Enable with: 
+agent: 'enabled=1,fstrim_cloned_disks=1,type=virtio'
 
 # Unattend.xml template variables:
-deploy_image: 'Windows Server 2019 SERVERDATACENTER'
+deploy_image: 'Windows Server 2022 SERVERDATACENTER'
 # Applicable 2019 options for deploy_image: 
 # Windows Server 2019 SERVERDATACENTER, Windows Server 2019 SERVERDATACENTERCORE,
 # Windows Server 2019 SERVERSTANDARD, Windows Server 2019 SERVERSTANDARDCORE
