@@ -2,7 +2,7 @@
 
 #description
 - name: Create windows template
-  hosts: test
+  hosts: pve:$test
   gather_facts: false
   vars_files:
     - ../vars/vars.yml 

@@ -10,6 +10,19 @@ all:
       hosts:
         pve2:
           ansible_host: 192.168.1.202
+    Windows:
+      hosts:
+        w2k22tpl:
+          ansible_host: 192.168.1.203
+          ansible_user: Administrator
+          ansible_password: Passw0rd
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_port: 5985
+          ansible_become_method: runas
+          ansible_become_user: Administrator
+          ansible_become_flags: logon_type=interactive logon_flags=with_profile
   vars:
     ansible_connection: ssh
     ansible_become_user: root
