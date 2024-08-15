@@ -25,6 +25,6 @@ deploy_image: 'Windows Server 2022 SERVERDATACENTER'
 # Applicable 2022 options for deploy_image: 
 # Windows Server 2022 SERVERDATACENTER, Windows Server 2022 SERVERDATACENTERCORE,
 # Windows Server 2022 SERVERSTANDARD, Windows Server 2022 SERVERSTANDARDCORE
-vm_admin_pass: AnsibleReady!
+vm_admin_pass: Passw0rd
 vm_time_zone: 'Eastern Standard Time'
 org_name: 'HowIAutomatedThis'

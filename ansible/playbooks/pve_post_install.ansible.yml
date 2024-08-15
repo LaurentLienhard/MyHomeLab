@@ -8,6 +8,24 @@
     - ../vars/vars.yml 
     - ../vars/proxmox.yml 
   tasks:
+    - name: Update config file for windows cloudbase compatibility
+    # copy each files in loop 
+      ansible.builtin.copy:
+        src: ../files/proxmox/{{ item.name }}
+        dest: "{{ item.dest }}/{{ item.name }}"
+        owner: root
+        group: root
+        mode: preserve
+        backup: yes
+      loop:
+        - {name: Cloudinit.pm, dest: /usr/share/perl5/PVE/QemuServer/ }
+        - {name: Qemu.pm, dest: /usr/share/perl5/PVE/API2/}
+
+    - name: restart service
+      ansible.builtin.service:
+        name: pvedaemon.service
+        state: restarted
+
     - name: Correct ProxMox VE Sources
     # The package manager will use the correct sources to update and install packages on your Proxmox VE server
       ansible.builtin.blockinfile:
@@ -76,4 +94,6 @@
         name:
           - python3-pip
           - python3-proxmoxer
+          - vim
+          - tree
         state: present
