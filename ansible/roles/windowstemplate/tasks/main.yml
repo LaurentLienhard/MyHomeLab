@@ -1,0 +1,11 @@
+---
+# tasks file for windowstemplate
+
+- name: Define VMID
+  import_tasks: 01-define-vmid.ansible.yml
+  when: vmid == 0 or vmid is undefined
+
+- name: debug
+  # Comment
+  ansible.builtin.debug:
+    msg: template name {{ template_name }} with {{ vmid }} {{ os_iso_location }}

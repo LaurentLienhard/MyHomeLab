@@ -1,0 +1,19 @@
+---
+# vars file for windowstemplate
+# Template Provisioning Variables
+template_name:  WinTPL
+vmid: 0
+pve_storage_id: local-lvm
+vm_cores: 2
+vm_sockets: 2
+vm_memory_mb: 2048
+vm_os_type: win11
+# vm_os_type must be valid value per https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines
+drive_size_gb: 50
+start_at_boot: no
+os_iso_location: nas-iso:iso/WinServer2022.iso
+format: raw
+# qcow2 or raw if on lvm
+#agent: enabled=0
+# or  
+agent: 'enabled=1,fstrim_cloned_disks=1,type=virtio'

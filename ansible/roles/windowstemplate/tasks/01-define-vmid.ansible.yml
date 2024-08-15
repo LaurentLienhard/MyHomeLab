@@ -1,0 +1,13 @@
+- name: Get available VMID
+  vars:
+    var_concat_seed: "{{inventory_hostname}}-{{template_name}}"
+    rand_vmid: "{{9999 | random(seed=var_concat_seed)}}"  
+  command: pvesh get /cluster/nextid -vmid {{rand_vmid}}
+  register: next_vmid
+  failed_when: next_vmid.rc != 0
+
+- name: Set vmid
+    # Comment
+  ansible.builtin.set_fact:
+    vmid: "{{next_vmid.stdout}}"
+  when: next_vmid.stdout is defined
