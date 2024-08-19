@@ -11,7 +11,11 @@ vm_os_type: win11
 # vm_os_type must be valid value per https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines
 drive_size_gb: 50
 start_at_boot: no
-os_iso_location: nas-iso:iso/WinServer2022.iso
+virto_download_url : https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+virtio_iso_name: virtio_winx64_latest.iso
+os_iso_download_url : https://go.microsoft.com/fwlink/p/?LinkID=2195280&clcid=0x409&culture=en-us&country=US
+os_iso_location: /mnt/pve/nas-iso/template/iso
+os_iso_name: SERVER_EVAL_x64FRE_en-us.iso
 format: raw
 # qcow2 or raw if on lvm
 #agent: enabled=0

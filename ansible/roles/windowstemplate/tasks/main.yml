@@ -9,3 +9,6 @@
   # Comment
   ansible.builtin.debug:
     msg: template name {{ template_name }} with {{ vmid }} {{ os_iso_location }}
+
+- name: Download file
+  ansible.builtin.import_tasks: 02-download-iso.ansible.yml
