@@ -1,5 +1,5 @@
 #
-# requirements for Ansible 
+# requirements for Ansible
 #
 ---
 # Install roles from Ansible Galaxy.
@@ -17,3 +17,4 @@ collections:
     version: 2.4.0
   - name: community.windows
     version: 2.2.0
+  - name: laurentlienhard.managedwindowsserver
