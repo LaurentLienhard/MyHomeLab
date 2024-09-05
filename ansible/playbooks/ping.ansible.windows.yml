@@ -2,9 +2,9 @@
 
 #description
 - name: ping module demo
-  hosts: pve
+  hosts: dsclab
   vars_files: 
-    - ../vars/vars.yml 
+    - ../vars/vars_windows.yml
     - ../vars/proxmox.yml 
   tasks:
     - name: test connection
