@@ -3,9 +3,6 @@
 #description
 - name: ping module demo
   hosts: dsclab
-  vars_files: 
-    - ../vars/vars_windows.yml
-    - ../vars/proxmox.yml 
   tasks:
     - name: test connection
       ansible.builtin.ping:

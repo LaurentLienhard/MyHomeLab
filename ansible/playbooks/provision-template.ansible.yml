@@ -5,8 +5,6 @@
   hosts: pve:$test
   gather_facts: false
   vars_files:
-    - ../vars/vars.yml 
-    - ../vars/proxmox.yml
     - ../vars/wintpl.yml
 
   tasks:

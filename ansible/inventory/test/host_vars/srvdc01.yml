@@ -1,0 +1,8 @@
+create_dns_delegation: false
+database_path: C:\Windows\NTDS
+dns_domain_name: contoso.com
+domain_mode: WinThreshold
+domain_netbios_name: CONTOSO
+forest_mode: WinThreshold
+safe_mode_password: password123!
+sysvol_path: C:\Windows\SYSVOL

@@ -4,9 +4,6 @@
 - name: Pve post installation configuration
   hosts: pve
   gather_facts: true
-  vars_files: 
-    - ../vars/vars.yml 
-    - ../vars/proxmox.yml 
   tasks:
     - name: Update config file for windows cloudbase compatibility
     # copy each files in loop 

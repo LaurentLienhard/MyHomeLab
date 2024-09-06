@@ -3,3 +3,4 @@
 #
 ansible-core==2.15.2
 pywinrm>=0.2.2
+ansible-lint

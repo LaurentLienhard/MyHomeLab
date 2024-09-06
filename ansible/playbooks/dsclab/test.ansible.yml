@@ -3,9 +3,6 @@
 #description
 - name: Configure DSC Lab
   hosts: dsclab
-  vars_files:
-    - ../../vars/vars_windows.yml
-    - ../../vars/proxmox.yml
 
   tasks:
     - name: rename server with name in inventory {{ inventory_hostname }}
@@ -28,14 +25,14 @@
 
       - name: Create new Windows domain in a new forest with specific parameters and reboot in post task
         microsoft.ad.domain:
-          create_dns_delegation: false
-          database_path: C:\Windows\NTDS
-          dns_domain_name: contoso.com
-          domain_mode: WinThreshold
-          domain_netbios_name: CONTOSO
-          forest_mode: WinThreshold
-          safe_mode_password: password123!
-          sysvol_path: C:\Windows\SYSVOL
+          create_dns_delegation: "{{ create_dns_delegation }}"
+          database_path: "{{ database_path }}"
+          dns_domain_name: "{{ dns_domain_name }}"
+          domain_mode: "{{ domain_mode }}"
+          domain_netbios_name: "{{ domain_netbios_name }}"
+          forest_mode: "{{ forest_mode }}"
+          safe_mode_password: "{{ safe_mode_password }}"
+          sysvol_path: "{{ sysvol_path }}"
         register: domain_install
 
       - name: Reboot host if install requires it
