@@ -5,8 +5,8 @@
   hosts: dsclab
 
   tasks:
-    - name: rename server with name in inventory {{ inventory_hostname }}
-      ansible.windows.win_hostname:
+    - name: Rename server with name in inventory {{ inventory_hostname }}
+      community.windows.win_hostname:
         name: "{{ inventory_hostname }}"
 
     - name: install windows updates on server {{ inventory_hostname }}

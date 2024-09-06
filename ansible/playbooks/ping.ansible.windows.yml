@@ -1,8 +1,8 @@
 ---
 
-#description
-- name: ping module demo
+# description
+- name: Ping module demo
   hosts: dsclab
   tasks:
-    - name: test connection
+    - name: Test connection
       ansible.builtin.ping:
