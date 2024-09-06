@@ -1,12 +1,12 @@
 ---
 
 #description
-- name: ping module demo
+- name: Configure DSC Lab
   hosts: dsclab
-  vars_files: 
+  vars_files:
     - ../../vars/vars_windows.yml
-    - ../../vars/proxmox.yml 
- 
+    - ../../vars/proxmox.yml
+
   tasks:
     - name: rename server with name in inventory {{ inventory_hostname }}
       ansible.windows.win_hostname:
@@ -25,17 +25,19 @@
           include_sub_features: yes
           state: present
           include_management_tools: yes
+
       - name: Create new Windows domain in a new forest with specific parameters and reboot in post task
         microsoft.ad.domain:
           create_dns_delegation: false
           database_path: C:\Windows\NTDS
-          dns_domain_name: contoso.com 
+          dns_domain_name: contoso.com
           domain_mode: WinThreshold
           domain_netbios_name: CONTOSO
           forest_mode: WinThreshold
           safe_mode_password: password123!
           sysvol_path: C:\Windows\SYSVOL
         register: domain_install
+
       - name: Reboot host if install requires it
         ansible.windows.win_reboot:
         when: domain_install.reboot_required
