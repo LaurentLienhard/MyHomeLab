@@ -3,6 +3,7 @@
 # description
 - name: Ping module demo
   hosts: dsclab
+  gather_facts: false
   tasks:
     - name: Test connection
-      ansible.builtin.ping:
+      ansible.builtin.win_ping:

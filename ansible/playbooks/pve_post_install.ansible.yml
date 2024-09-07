@@ -4,11 +4,13 @@
 - name: Pve post installation configuration
   hosts: pve
   gather_facts: true
+  vars:
+    source_file: ../files/proxmox
   tasks:
     - name: Update config file for windows cloudbase compatibility
-    # copy each files in loop 
+    # copy each files in loop
       ansible.builtin.copy:
-        src: ../files/proxmox/{{ item.name }}
+        src: "{{ source_file }}/{{ item.name }}"
         dest: "{{ item.dest }}/{{ item.name }}"
         owner: root
         group: root
@@ -34,7 +36,7 @@
         create: true
         state: present
         mode: '0644'
-  
+
     - name: Remove 'pve-enterprise' repository
     # This will remove the enterprise repository from the sources list
       ansible.builtin.file:
@@ -74,8 +76,11 @@
         state: present
 
     - name: Disable subscription nag
-    # This will disable the subscription nag
-      ansible.builtin.shell: 'sed -Ezi.bak "s/(function\(orig_cmd\) \{)/\1\n\torig_cmd\(\);\n\treturn;/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && systemctl restart pveproxy.service'
+      ansible.builtin.replace:
+        path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+        regexp: '(function\(orig_cmd\) \{)'
+        replace: '\1\n\torig_cmd();\n\treturn;'
+        backup: true
 
     - name: Updating Proxmox VE (Patience)
     # This will update the Proxmox VE server

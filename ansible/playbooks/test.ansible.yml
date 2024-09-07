@@ -6,7 +6,7 @@
 
   tasks:
     - name: Rename server with name in inventory {{ inventory_hostname }}
-      community.windows.win_hostname:
+      ansible.builtin.win_hostname:
         name: "{{ inventory_hostname }}"
 
     - name: install windows updates on server {{ inventory_hostname }}
