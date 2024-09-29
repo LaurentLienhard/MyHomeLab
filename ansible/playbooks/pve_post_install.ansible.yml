@@ -141,7 +141,7 @@
                   enabled 1
                   fleecing 0
                   mailnotification failure
-                  mailto laurent@lienhard.fr
+                  mailto '{{ mailto }}'
                   mode snapshot
                   notes-template {{ '{{guestname}}' }}
                   prune-backups keep-daily=7,keep-monthly=1
