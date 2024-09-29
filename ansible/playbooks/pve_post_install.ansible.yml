@@ -12,13 +12,13 @@
       ansible.builtin.copy:
         src: "{{ source_file }}/{{ item.name }}"
         dest: "{{ item.dest }}/{{ item.name }}"
-        owner: root
-        group: root
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
         mode: preserve
         backup: true
       loop:
-        - {name: Cloudinit.pm, dest: /usr/share/perl5/PVE/QemuServer/ }
-        - {name: Qemu.pm, dest: /usr/share/perl5/PVE/API2/}
+        - {name: Cloudinit.pm, dest: /usr/share/perl5/PVE/QemuServer/, owner: root, group: root}
+        - {name: Qemu.pm, dest: /usr/share/perl5/PVE/API2/, owner: root, group: root}
 
     - name: Restart service
       ansible.builtin.service:
@@ -100,3 +100,50 @@
           - vim
           - tree
         state: present
+
+    - name: Configure NFS share
+      tags: nfs
+      ansible.builtin.blockinfile:
+        backup: true
+        path: /etc/pve/storage.cfg
+        block: |
+          nfs:  nas-iso
+                  export /volume1/nas-iso
+                  path /mnt/pve/nas-iso
+                  server {{ nas_ip }}
+                  content iso
+                  prune-backups keep-all=1
+
+          nfs:  nas-backup
+                  export /volume1/nas-backup
+                  path /mnt/pve/nas-backup
+                  server {{ nas_ip }}
+                  content backup
+                  prune-backups keep-all=1
+
+          nfs:  nas-template
+                  export /volume1/nas-template
+                  path /mnt/pve/nas-template
+                  server {{ nas_ip }}
+                  content vztmpl
+                  prune-backups keep-all=1
+
+    - name: Configure default backup
+      tags: backup
+      ansible.builtin.blockinfile:
+        backup: true
+        path: /etc/pve/jobs.cfg
+        block: |
+          vzdump: backup-dd2b7e59-e833
+                  schedule 21:00
+                  all 1
+                  compress zstd
+                  enabled 1
+                  fleecing 0
+                  mailnotification failure
+                  mailto laurent@lienhard.fr
+                  mode snapshot
+                  notes-template {{ '{{guestname}}' }}
+                  prune-backups keep-daily=7,keep-monthly=1
+                  repeat-missed 1
+                  storage nas-backup

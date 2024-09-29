@@ -1,0 +1,13 @@
+digraph "Web Service" {
+	graph [fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="Web Service" nodesep=0.60 pad=2.0 rankdir=LR ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	f763c3dd84214b4ca0065f9a9584c8ad [label=dns height=1.9 image="/home/laurent/MyHomeLab/ansible/.direnv/python-3.10.12/lib/python3.10/site-packages/resources/aws/network/route-53.png" shape=none]
+	b80699d449244af5b4b595962a69e560 [label="load balancer" height=1.9 image="/home/laurent/MyHomeLab/ansible/.direnv/python-3.10.12/lib/python3.10/site-packages/resources/aws/network/elastic-load-balancing.png" shape=none]
+	subgraph "cluster_Web Servers" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Web Servers" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"32a22da8ec774018b96e36d6dc87d3c3" [label=web height=1.9 image="/home/laurent/MyHomeLab/ansible/.direnv/python-3.10.12/lib/python3.10/site-packages/resources/aws/compute/ec2.png" shape=none]
+	}
+	f763c3dd84214b4ca0065f9a9584c8ad -> b80699d449244af5b4b595962a69e560 [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	b80699d449244af5b4b595962a69e560 -> "32a22da8ec774018b96e36d6dc87d3c3" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}

@@ -2,23 +2,8 @@
 
 #test le reole de creation d'un template windows
 - name: Windows template creation
-  hosts: test
-  vars_files: 
-    - ../vars/vars.yml 
-    - ../vars/proxmox.yml 
+  hosts: pve
   tasks:
-    - name: Pass variables to role
+    - name: Test role bastion
       import_role:
-        name: roles/windowstemplate
-      vars:
-        vmid: 0
-        template_name: "MytemplateW2K22"
-        os_iso_location: nas-iso:iso/WinServer2022.iso
-        vm_cores: 2
-        vm_sockets: 2
-        vm_memory_mb: 2048
-        drive_size_gb: 50
-        vm_os_type: win11
-        format: raw
-        pve_storage_id: local-lvm
-        agent: 'enabled=1,fstrim_cloned_disks=1,type=virtio'
+        name: roles/bastion
