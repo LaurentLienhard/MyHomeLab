@@ -1,0 +1,12 @@
+# Remove ISO
+- name: Remove Unattend ISO file
+  file:
+    path: '{{ os_iso_location }}/{{template_name}}Provision.iso'
+    state: absent
+
+# Cleanup temp files
+- name: Cleanup temp files used for ISO build
+  file:
+    path: /tmp/{{template_name}}
+    state: absent
+  when: iso_created.changed      

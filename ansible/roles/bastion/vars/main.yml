@@ -1,7 +1,0 @@
----
-# vars file for bastion
-
-bastion_os_iso_location: /mnt/pve/nas-iso/template/iso
-bastion_os_iso_name: ubuntu-24.04.1-live-server-amd64.iso
-bastion_os_iso_url: https://ubuntu.mirrors.ovh.net/ubuntu-releases/24.04.1/ubuntu-24.04.1-live-server-amd64.iso
-

@@ -1,5 +1,0 @@
----
-# tasks file for bastion
-
-- name: Test if {{ bastion_os_iso_name }} already exists in {{ bastion_os_iso_location }}
-  import_tasks: 01_donwload_iso.ansible.yml

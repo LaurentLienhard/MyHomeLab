@@ -8,6 +8,7 @@ vm_cores: 2
 vm_sockets: 2
 vm_memory_mb: 2048
 vm_os_type: win11
+bridge: vmbr0
 # vm_os_type must be valid value per https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines
 drive_size_gb: 50
 start_at_boot: no
@@ -21,3 +22,15 @@ format: raw
 #agent: enabled=0
 # or  
 agent: 'enabled=1,fstrim_cloned_disks=1,type=virtio'
+
+# Unattend.xml template variables:
+deploy_image: 'Windows Server 2022 SERVERDATACENTER'
+# Applicable 2019 options for deploy_image: 
+# Windows Server 2019 SERVERDATACENTER, Windows Server 2019 SERVERDATACENTERCORE,
+# Windows Server 2019 SERVERSTANDARD, Windows Server 2019 SERVERSTANDARDCORE,
+# Applicable 2022 options for deploy_image: 
+# Windows Server 2022 SERVERDATACENTER, Windows Server 2022 SERVERDATACENTERCORE,
+# Windows Server 2022 SERVERSTANDARD, Windows Server 2022 SERVERSTANDARDCORE
+vm_admin_pass: Passw0rd
+vm_time_zone: 'Eastern Standard Time'
+org_name: 'HowIAutomatedThis'

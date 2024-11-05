@@ -12,3 +12,13 @@
 
 - name: Download file
   ansible.builtin.import_tasks: 02-download-iso.ansible.yml
+
+- name: Prepare file
+  ansible.builtin.import_tasks: 03-prepare-files.ansible.yml
+
+- name: Create template
+  ansible.builtin.import_tasks: 04-create-vm.ansible.yml
+
+- name: Cleanup
+  ansible.builtin.import_tasks: 05-cleanup.ansible.yml
+  tags: cleanup

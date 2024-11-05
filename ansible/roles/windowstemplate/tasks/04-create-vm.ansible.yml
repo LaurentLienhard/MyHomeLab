@@ -1,0 +1,29 @@
+# Create VM
+- name: Create VM
+  command: "qm create {{next_vmid.stdout}} --name {{template_name}} --sockets {{vm_sockets}} --cores {{vm_cores}} --memory {{vm_memory_mb}} --ide0 file='/mnt/pve/nas-iso/template/iso/{{ os_iso_name }}',media=cdrom --ide1 file=local:'/mnt/pve/nas-iso/template/iso/{{ virtio_iso_name }}',media=cdrom --net0 model=virtio,bridge={{bridge}},firewall=1 --scsihw virtio-scsi-pci --scsi0 {{pve_storage_id}}:{{drive_size_gb}} --ostype {{vm_os_type}}" 
+
+# Add Cloudinit-base drive to VM
+- name: Add Cloudinit to VM
+  command: "qm set {{next_vmid.stdout}} --ide2 local:cloudinit"
+
+# Start VM
+- name: Start VM
+  command: "qm start {{next_vmid.stdout}}"
+
+# Wait for VM build
+- name: Wait for OS install, config, update, sysprep. Up to 120 min. Monitor status if possible.
+  command: "qm wait {{next_vmid.stdout}}"    
+  async: 7200
+  poll: 30  
+
+# Remove CD drives
+- name: Remove IDE CD Drives
+  command: "qm set {{next_vmid.stdout}} --delete ide2 --delete ide3"
+
+# Create template from VM
+- name: Create template
+  command: "qm template {{next_vmid.stdout}}"        
+
+- name: Done
+  debug:
+    msg: Template build {{template_name}}, with VMID {{next_vmid.stdout}} complete.

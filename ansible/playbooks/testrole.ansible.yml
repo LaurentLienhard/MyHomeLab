@@ -4,6 +4,6 @@
 - name: Windows template creation
   hosts: pve
   tasks:
-    - name: Test role bastion
+    - name: Test role windows template
       import_role:
-        name: roles/bastion
+        name: roles/windowstemplate

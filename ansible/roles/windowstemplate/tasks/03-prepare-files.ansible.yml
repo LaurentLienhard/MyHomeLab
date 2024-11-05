@@ -1,0 +1,17 @@
+# Template out autounattend answer file    
+- name: Template out autounattend answer file        
+  template:
+    src: ./autounattend.xml.tpl
+    dest: /tmp/{{template_name}}/autounattend.xml
+
+# Copy drivers & scripts for ISO         
+- name: Copy files for ISO
+  copy:
+    src: iso-files/
+    dest: /tmp/{{template_name}}/
+
+# Create ISO with drivers, scripts, & answer file    
+- name: Create ISO file
+  become: true
+  command: "genisoimage -J -r -o {{ os_iso_location }}/{{template_name}}Provision.iso /tmp/{{template_name}}/"
+  register: iso_created 
