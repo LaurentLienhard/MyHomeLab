@@ -1,29 +1,29 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/alpine
 {
-	"name": "Alpine",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"name": "MyHomeLab - Proxmox Ansible Automation",
 	"image": "mcr.microsoft.com/devcontainers/base:alpine-3.20",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"anthropic.claude-code"
+				"Anthropic.claude-code"
 			]
 		}
-	}
+	},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	// Persist Claude Code settings and API key between restarts
+	"mounts": [
+		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
+	],
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	// Install system dependencies and set up environment
+	"postCreateCommand": "bash -c 'sudo apk add --no-cache bash direnv git openssh-client python3 python3-dev py3-pip make curl tar gzip vim jq cdrkit && cd /workspaces/MyHomeLab/ansible && direnv allow && eval \"$(direnv export bash)\" && make prepare'",
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
+	// Forward Proxmox web UI and other relevant ports if needed
+	"forwardPorts": [],
 
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	// Enable Docker support if needed for future enhancements
+	// "features": {
+	//   "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	// }
 }
