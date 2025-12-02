@@ -184,6 +184,27 @@ ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml --
 3. Run with `--check` to preview changes on actual infrastructure
 4. Review output with `-v` or `-vv` for detailed debugging
 
+### Monitoring Playbook Execution
+
+For long-running playbooks like Windows template provisioning, monitor progress on the target system:
+
+```bash
+# On Proxmox host during VM creation (check VM status)
+qm list
+qm status {vmid}
+
+# Monitor VM console output (requires SSH access to Proxmox)
+ssh root@proxmox-host 'qm terminal {vmid}'
+
+# Check if VM is still running (waits for completion)
+qm wait {vmid}
+
+# View task timings (already captured in playbook output if callbacks enabled)
+# Look for output like: "Longest running operations:"
+```
+
+**Note:** Enable `ANSIBLE_CALLBACKS_ENABLED=timer,profile_tasks` in `.envrc` (default) to see task timing in playbook output.
+
 ### Working with Ansible Vault
 
 The repository uses Ansible Vault to encrypt sensitive data in inventory files:
@@ -374,16 +395,38 @@ Windows Server 2019 SERVERSTANDARD
 Windows Server 2019 SERVERDATACENTER
 ```
 
-## Architecture
+## Understanding the codebase
+
+### Windows Template Role Structure
+
+The `windowstemplate` role (`ansible/roles/windowstemplate/`) is responsible for creating Windows Server VM templates on Proxmox. It's broken into modular task files for flexibility:
+
+**Task Files (in `tasks/`):**
+- **01-define-vmid.ansible.yml**: Calculates next available VMID to avoid collisions using seeded random generation
+- **02-download-iso.ansible.yml**: Downloads Windows Server ISO from Microsoft (cached, reuses existing ISO)
+- **03-prepare-files.ansible.yml**: Generates `autounattend.xml` answer file and creates custom provisioning ISO with VirtIO drivers
+- **04-create-vm.ansible.yml**: Creates VM on Proxmox with CloudInit drive and boots from OS ISO
+- **05-cleanup.ansible.yml**: Removes temporary files (answer file, provisioning ISO) after VM creation
+
+**Support Files:**
+- **templates/autounattend.xml.tpl**: Jinja2 template for Windows unattended answer file (controls installation and sysprep)
+- **files/iso-files/**: Contains VirtIO drivers, PowerShell scripts, and Cloudbase-Init configuration
+- **vars/main.yml**: Role variable defaults
+
+**How It Works:**
+1. Role is called from `testrole.ansible.yml` playbook with variables from `vars/wintpl.yml`
+2. Each task file can be run independently or as part of the full sequence
+3. The role waits for Windows installation to complete by monitoring VM shutdown (sysprep triggers shutdown)
+4. VM is converted to template after installation completes
+5. All temporary ISO/answer files are cleaned up automatically
 
 ### Inventory Organization
 
-The repository uses a dual-inventory structure for environment separation:
+The inventory uses a dual-environment structure:
+- **production/**: Single Proxmox host (`pve1`) - used for production VM templates
+- **test/**: Proxmox host + Windows test VMs (`srvdc01`, `srvfile01`, `srvdsc01` in `dsclab` group)
 
-- **production/**: Contains the production Proxmox host (`pve1`)
-- **test/**: Contains both Proxmox host and test Windows servers (dsclab group: srvdc01, srvfile01, srvdsc01)
-
-Host variables and group variables are encrypted with Ansible Vault for security. This separation prevents accidental production changes and allows independent test environment configuration.
+This separation prevents accidental production changes and allows independent test environment configuration. Host variables and group variables are encrypted with Ansible Vault for security.
 
 ### Proxmox CloudInit Compatibility Patches
 
@@ -509,6 +552,22 @@ To create a new Windows Server template version:
 3. Run `testrole.ansible.yml` (or `provision-template.ansible.yml` if needed)
 4. Monitor progress with `qm list` on Proxmox host
 5. Validate template after sysprep completion
+
+### Git Workflow
+
+The repository uses `main` as the primary branch with `docker-configuration` for devcontainer changes. When making changes:
+
+1. Create a feature branch for development: `git checkout -b feature/description`
+2. Test changes thoroughly in test environment before committing
+3. Lint all playbooks: `ansible-lint playbooks/`
+4. Commit with descriptive messages: `git commit -m "Describe change and rationale"`
+5. Verify no vault passwords or secrets are included: `git diff HEAD`
+6. Push to remote and create a pull request for review
+7. After merging to main, verify production changes in a dry-run before applying
+
+**Important:** Always use the correct inventory for testing:
+- Feature development and validation: use `-i inventory/test/hosts.yml`
+- Production deployment: use `-i inventory/production/hosts.yml` (only after validation)
 
 ## Troubleshooting
 
