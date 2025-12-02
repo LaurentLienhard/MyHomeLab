@@ -17,7 +17,7 @@
 	],
 
 	// Install system dependencies and set up environment
-	"postCreateCommand": "bash -c 'sudo apk add --no-cache bash direnv git openssh-client python3 python3-dev py3-pip make curl tar gzip vim jq cdrkit && cd /workspaces/MyHomeLab/ansible && direnv allow && eval \"$(direnv export bash)\" && make prepare'",
+	"postCreateCommand": "bash -c 'sudo apk add --no-cache bash direnv git openssh-client python3 python3-dev py3-pip make curl tar gzip vim jq cdrkit unzip && curl -L https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_arm64.zip -o /tmp/terraform.zip && sudo unzip /tmp/terraform.zip -d /usr/local/bin && rm /tmp/terraform.zip && terraform -version'",
 
 	// Forward Proxmox web UI and other relevant ports if needed
 	"forwardPorts": [],

@@ -1,0 +1,67 @@
+# Terraform State Files
+terraform.tfstate
+terraform.tfstate.*
+.terraform.lock.hcl
+
+# Terraform Working Directory
+.terraform/
+.terraform.d/
+
+# Credentials and Sensitive Files (MUST BE IGNORED!)
+terraform.tfvars
+terraform.tfvars.json
+.env.local
+.env
+*.auto.tfvars
+*.auto.tfvars.json
+.vault_password
+
+# Plan Files
+*.tfplan
+tfplan
+tfplan.json
+tfplan_*
+
+# Logs and Debug
+*.log
+terraform.debug.log
+crash.log
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS Files
+.DS_Store
+._.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# SSH Keys (if stored locally)
+id_rsa
+id_rsa.pub
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# Editor backups
+*.swp
+*.swo
+*~
+.*.swp

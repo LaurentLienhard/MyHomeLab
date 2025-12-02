@@ -1,0 +1,259 @@
+# ============================================================================
+# EXEMPLES DE RESSOURCES
+# ============================================================================
+#
+# Ce fichier contient des exemples de ressources que vous pouvez ajouter
+# progressivement. Ces exemples sont COMMENTÉS - à décommenter au besoin.
+#
+# Pour utiliser: Copier le code pertinent dans main.tf et adapter
+#
+# ============================================================================
+
+# ============================================================================
+# Phase 2: Stockage NFS
+# ============================================================================
+#
+# Prérequis:
+# - variable "nfs_server_ip" = "192.168.1.252"
+# - variable "nfs_export_base" = "/volume1"
+# - Exports NFS existants sur le NAS
+#
+
+# resource "proxmox_virtual_environment_storage" "nfs_iso" {
+#   datastore_id = "nas-iso"
+#   type         = "nfs"
+#   content      = ["iso"]
+#   nodes        = [var.proxmox_node_name]
+#   disable      = false
+#
+#   nfs {
+#     server = var.nfs_server_ip
+#     export = "${var.nfs_export_base}/nas-iso"
+#   }
+# }
+#
+# resource "proxmox_virtual_environment_storage" "nfs_backup" {
+#   datastore_id = "nas-backup"
+#   type         = "nfs"
+#   content      = ["backup"]
+#   nodes        = [var.proxmox_node_name]
+#   disable      = false
+#
+#   nfs {
+#     server = var.nfs_server_ip
+#     export = "${var.nfs_export_base}/nas-backup"
+#   }
+# }
+#
+# resource "proxmox_virtual_environment_storage" "nfs_template" {
+#   datastore_id = "nas-template"
+#   type         = "nfs"
+#   content      = ["images", "rootdir"]
+#   nodes        = [var.proxmox_node_name]
+#   disable      = false
+#
+#   nfs {
+#     server = var.nfs_server_ip
+#     export = "${var.nfs_export_base}/nas-template"
+#   }
+# }
+
+# ============================================================================
+# Phase 3: Sauvegardes Automatiques
+# ============================================================================
+#
+# Prérequis:
+# - Phase 2 (Stockage NFS) complétée
+# - Accès au stockage nas-backup
+#
+
+# resource "proxmox_virtual_environment_backup_job" "daily" {
+#   schedule = "0 21 * * *"  # 21:00 tous les jours
+#   nodes    = [var.proxmox_node_name]
+#   storage  = "nas-backup"
+#
+#   retention {
+#     keep_daily   = 7
+#     keep_monthly = 1
+#   }
+#
+#   compression = "zstd"
+#   enabled     = true
+#   comment     = "Daily backups managed by Terraform"
+#
+#   depends_on = [
+#     proxmox_virtual_environment_storage.nfs_backup
+#   ]
+# }
+
+# ============================================================================
+# Phase 4: Certificat SSL Custom
+# ============================================================================
+#
+# Prérequis:
+# - Certificat SSL valide (PEM format)
+# - Clé privée (PEM format)
+#
+# Fichiers attendus:
+# - HomeLab/terrafrom/certs/cert.pem
+# - HomeLab/terrafrom/certs/key.pem
+#
+
+# resource "proxmox_virtual_environment_certificate" "custom" {
+#   node_name    = var.proxmox_node_name
+#   certificate  = file("${path.module}/certs/cert.pem")
+#   private_key  = file("${path.module}/certs/key.pem")
+#   force        = true  # ⚠️ Remplace le certificat existant!
+# }
+
+# ============================================================================
+# Phase 5: Utilisateur de Service (Terraform)
+# ============================================================================
+#
+
+# resource "proxmox_virtual_environment_user" "terraform_user" {
+#   user_id = "terraform@pve"
+#   password = var.terraform_user_password  # À déclarer dans variables.tf
+#   comment  = "Service account for Terraform automation"
+#   enabled  = true
+# }
+
+# ============================================================================
+# Phase 5: Rôle Terraform (Permissions)
+# ============================================================================
+#
+
+# resource "proxmox_virtual_environment_role" "terraform_role" {
+#   role_id = "Terraform"
+#
+#   privileges = [
+#     "Sys.Audit",
+#     "Datastore.AllocateSpace",
+#     "Datastore.AllocateTemplate",
+#     "Datastore.Audit",
+#     "VM.Allocate",
+#     "VM.Audit",
+#     "VM.Clone",
+#     "VM.Config.CDROM",
+#     "VM.Config.Cloudinit",
+#     "VM.Config.CPU",
+#     "VM.Config.Disk",
+#     "VM.Config.Memory",
+#     "VM.Config.Network",
+#     "VM.Create",
+#     "VM.Migrate",
+#     "VM.Monitor",
+#     "VM.PowerMgmt",
+#   ]
+# }
+
+# ============================================================================
+# Phase 6: Simple Linux VM (basée sur template)
+# ============================================================================
+#
+# Prérequis:
+# - Template Linux existant (VM ID: 9000)
+# - Réseau vlan0 avec bridge vmbr0
+#
+
+# resource "proxmox_virtual_environment_vm" "linux_example" {
+#   node_name    = var.proxmox_node_name
+#   vm_id        = 100
+#   name         = "linux-01"
+#   description  = "Linux VM managed by Terraform"
+#   startup {
+#     order      = "any"
+#   }
+#
+#   initialization {
+#     user_account {
+#       username = "ubuntu"
+#       password = "changeme"  # À changer!
+#     }
+#
+#     dns {
+#       servers = ["8.8.8.8", "8.8.4.4"]
+#     }
+#   }
+#
+#   cpu {
+#     cores = 2
+#     type  = "x86-64-v2-AES"
+#   }
+#
+#   memory {
+#     dedicated = 2048  # 2GB
+#   }
+#
+#   network_device {
+#     bridge = "vmbr0"
+#   }
+#
+#   clone {
+#     vm_id = 9000  # ID du template Linux
+#   }
+# }
+
+# ============================================================================
+# Phase 6: Windows VM (Template + Ansible)
+# ============================================================================
+#
+# Prérequis:
+# - Template Windows 2022 existant (créé via Ansible)
+# - Domaine Active Directory (optionnel)
+#
+
+# resource "proxmox_virtual_environment_vm" "windows_example" {
+#   node_name    = var.proxmox_node_name
+#   vm_id        = 101
+#   name         = "windows-01"
+#   description  = "Windows Server VM managed by Terraform"
+#
+#   startup {
+#     order    = "any"
+#   }
+#
+#   initialization {
+#     user_account {
+#       username = "Administrator"
+#       password = "ComplexPassword123!"  # À changer!
+#     }
+#
+#     dns {
+#       servers = ["8.8.8.8"]
+#     }
+#   }
+#
+#   cpu {
+#     cores = 2
+#     type  = "x86-64-v2-AES"
+#   }
+#
+#   memory {
+#     dedicated = 4096  # 4GB pour Windows
+#   }
+#
+#   network_device {
+#     bridge = "vmbr0"
+#   }
+#
+#   clone {
+#     vm_id = 200  # ID du template Windows 2022
+#   }
+# }
+
+# ============================================================================
+# Aide et Documentation
+# ============================================================================
+#
+# Pour chaque ressource, consulter:
+# https://registry.terraform.io/providers/bpg/proxmox/latest
+#
+# Workflow pour ajouter une ressource:
+# 1. Copier le code pertinent dans main.tf
+# 2. Adapter les variables à votre environnement
+# 3. Valider: terraform validate
+# 4. Planifier: terraform plan
+# 5. Appliquer: terraform apply
+#
+# ============================================================================

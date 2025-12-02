@@ -1,0 +1,57 @@
+# ============================================================================
+# Terraform Variables - TEMPLATE
+# ============================================================================
+#
+# INSTRUCTIONS:
+# 1. Copier ce fichier en terraform.tfvars:
+#    cp terraform.tfvars.template terraform.tfvars
+#
+# 2. Remplir avec vos valeurs réelles
+#
+# 3. IMPORTANT: Ne JAMAIS committer terraform.tfvars à git!
+#    Vérifier: grep terraform.tfvars .gitignore
+#
+# 4. OPTION ALTERNATIVE - Variables d'environnement (recommandé):
+#    export TF_VAR_proxmox_url="https://pve1.example.com:8006"
+#    export TF_VAR_proxmox_api_token="root@pam!terraform=xxxxx"
+#    export TF_VAR_proxmox_insecure="true"
+#
+# ============================================================================
+
+# URL API Proxmox - OBLIGATOIRE
+proxmox_url = "https://pve1.homelab.local:8006"
+
+# Token API Proxmox - OBLIGATOIRE - SENSIBLE!
+# Format: user@realm!tokenname=uuid
+# Comment créer: Proxmox UI → Datacenter → Permissions → API Tokens → Add
+proxmox_api_token = "root@pam!terraform=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Désactiver vérification TLS (pour certificats auto-signés)
+proxmox_insecure = true
+
+# Utilisateur SSH pour Proxmox
+ssh_username = "root"
+
+# Nom du nœud Proxmox
+proxmox_node_name = "pve1"
+
+# Nom du cluster
+proxmox_cluster_name = "homelab-cluster"
+
+# Environnement (dev, test, staging, prod, homelab)
+environment = "homelab"
+
+# NFS - À remplir uniquement si vous utilisez NFS
+# nfs_server_ip = "192.168.1.252"
+# nfs_export_base = "/volume1"
+
+# Email pour notifications - À remplir optionnellement
+# backup_email = "admin@example.com"
+
+# Tags pour les ressources
+tags = {
+  Environment = "homelab"
+  ManagedBy   = "terraform"
+  Project     = "MyHomeLab"
+  Owner       = "votre-nom"
+}
