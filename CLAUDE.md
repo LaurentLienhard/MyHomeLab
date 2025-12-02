@@ -206,8 +206,34 @@ ansible-playbook -i inventory/production/hosts.yml playbooks/pve_post_install.an
 ```
 
 **Vault Password Configuration:**
-- Recommended: Create `.vault_password` file with your password (add to .gitignore)
-- Or: Set `ANSIBLE_VAULT_PASSWORD_FILE=.vault_password` in `.env.local` (loaded by direnv)
+
+Option 1: Password file (Recommended for automated workflows)
+```bash
+# Create password file in ansible/ directory
+echo "your-vault-password" > ansible/.vault_password
+chmod 600 ansible/.vault_password  # Restrict permissions
+# Add .vault_password to .gitignore (should already be there)
+
+# Then run playbooks without prompting:
+ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml
+```
+
+Option 2: Environment variable (via `.env.local`)
+```bash
+# Create ansible/.env.local
+echo "ANSIBLE_VAULT_PASSWORD_FILE=.vault_password" > ansible/.env.local
+
+# The .envrc file automatically sources .env.local when you cd into ansible/
+# Ensure your vault password file is in the same location
+```
+
+Option 3: Interactive prompt (least convenient)
+```bash
+# Run playbook with prompt for vault password
+ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml --ask-vault-pass
+```
+
+**Security Note:** Never commit `.vault_password` to git. Ensure it's in `.gitignore`.
 
 ## Playbook Reference
 
@@ -409,10 +435,63 @@ The provisioning role includes VirtIO drivers for optimal Windows VM performance
 
 The typical workflow for changes:
 1. Make playbook edits
-2. Test against test environment: `-i inventory/test/hosts.yml`
-3. Use `--check` mode for dry-run verification
-4. Review output with `-vv` or `-vvv` for detailed debugging
-5. Run against production once validated: `-i inventory/production/hosts.yml`
+2. Lint with `ansible-lint playbooks/` to catch issues early
+3. Test against test environment: `-i inventory/test/hosts.yml`
+4. Use `--check` mode for dry-run verification
+5. Review output with `-vv` or `-vvv` for detailed debugging
+6. Run against production once validated: `-i inventory/production/hosts.yml`
+
+### Creating a New Role
+
+Roles are organized in `ansible/roles/`. To create a new role:
+
+```bash
+# Generate role structure
+ansible-galaxy role init roles/myrole
+
+# Role structure:
+# roles/myrole/
+# ├── tasks/main.yml        # Role tasks
+# ├── handlers/main.yml      # Event handlers
+# ├── templates/             # Jinja2 templates
+# ├── files/                 # Static files to copy
+# ├── vars/main.yml          # Role default variables
+# ├── defaults/main.yml      # Role default variables (lower precedence)
+# ├── meta/main.yml          # Role metadata and dependencies
+# └── README.md              # Role documentation
+```
+
+**Guidelines:**
+- Keep tasks focused and modular (break into subtasks files if large)
+- Use meaningful task names for readability in playbook output
+- Prefix templates with role name when generic (e.g., `myrole-config.j2`)
+- Document required variables in `defaults/main.yml` with comments
+- Tag tasks for selective execution (e.g., `--tags config`, `--tags install`)
+
+### Developing a New Playbook
+
+Playbooks should be in `ansible/playbooks/`:
+
+```yaml
+---
+- name: Descriptive playbook name
+  hosts: target_group  # Must match inventory group
+  gather_facts: true   # Set to false if not needed for performance
+  vars:
+    # Playbook-specific variables
+    my_var: value
+  tasks:
+    - name: Task description
+      module_name:
+        param: value
+      tags: feature-tag  # Allows selective execution
+```
+
+**Naming convention:**
+- Use descriptive names: `provision-template.ansible.yml`, `pve_post_install.ansible.yml`
+- Keep filenames lowercase with hyphens or underscores
+- Suffix with `.ansible.yml` to identify as Ansible playbooks
+- Group related playbooks (e.g., all Proxmox playbooks in one directory)
 
 ### Adding New Hosts
 
