@@ -36,26 +36,49 @@ ansible/
 
 ## Development Environment Setup
 
-### Initial Setup (One-Time)
+### Quick Start (Recommended)
 
-The repository uses **direnv** to automatically manage a Python virtual environment. When you `cd` into the `ansible/` directory, direnv will automatically activate the venv.
+Use the **Dev Container** for automatic setup:
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd MyHomeLab
+
+# 2. Open in VSCode and accept "Reopen in Container" prompt
+# The devcontainer will automatically install all dependencies
+```
+
+The Dev Container includes:
+- Alpine Linux base with all required system tools
+- Python 3 with virtual environment
+- direnv for environment variable management
+- All Python and Ansible Galaxy dependencies
+
+### Manual Setup (One-Time)
+
+If you prefer not to use Dev Container, follow these steps:
 
 ```bash
 # 1. Clone the repository
 git clone <repo-url>
 cd MyHomeLab/ansible
 
-# 2. Direnv will prompt you to allow the .envrc file
+# 2. Install direnv if not already installed
+# See https://direnv.net/docs/installation.html for your OS
+
+# 3. Allow direnv to load .envrc
 direnv allow
 
-# 3. Install all dependencies (Ansible, collections, roles)
-make -C ansible prepare
+# 4. Install all dependencies (Ansible, collections, roles)
+make prepare
 
-# 4. Configure Ansible Vault password (optional but recommended)
+# 5. Configure Ansible Vault password (optional but recommended)
 # Create .env.local in the ansible/ directory with:
 # ANSIBLE_VAULT_PASSWORD_FILE=.vault_password
-# Then place your vault password in that file
+# Then place your vault password in .vault_password file
 ```
+
+**Note:** The `make prepare` command requires direnv to have already set up the Python virtual environment. If you see "Venv not found", ensure you've run `direnv allow` first.
 
 ### Environment Variables
 
@@ -137,10 +160,29 @@ ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml -v
 
 # Debug mode (show all variable values and task execution)
 ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml -vvv
-
-# Syntax check without running
-ansible-lint playbooks/pve_post_install.ansible.yml
 ```
+
+### Linting and Testing
+
+```bash
+# Lint a single playbook for syntax and best practices
+ansible-lint playbooks/pve_post_install.ansible.yml
+
+# Lint all playbooks
+ansible-lint playbooks/
+
+# Lint with detailed output
+ansible-lint -v playbooks/
+
+# Test playbook syntax without running (does not validate variables)
+ansible-playbook -i inventory/production/hosts.yml playbooks/ping.ansible.yml --syntax-check
+```
+
+**Best Practice Workflow:**
+1. Run `ansible-lint` on all changes before committing
+2. Test with `--syntax-check` to catch variable issues early
+3. Run with `--check` to preview changes on actual infrastructure
+4. Review output with `-v` or `-vv` for detailed debugging
 
 ### Working with Ansible Vault
 
